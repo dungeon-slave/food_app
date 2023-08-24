@@ -62,7 +62,14 @@ class ShoppingCartScreen extends StatelessWidget {
                     return AppError(errorText: state.errorMessage);
                   }
                   if (state.items.isEmpty) {
-                    return const EmptyListTitle();
+                    return EmptyList(
+                      margin: EdgeInsets.only(
+                        bottom: constraints.minHeight / 8,
+                      ),
+                      link: state.isOrdered
+                          ? AppAnimations.ordered
+                          : AppAnimations.emptyList,
+                    );
                   }
                   return Container(
                     margin: const EdgeInsets.only(bottom: AppDimens.padding100),

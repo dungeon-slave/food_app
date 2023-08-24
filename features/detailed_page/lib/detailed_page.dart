@@ -2,7 +2,7 @@ library detailed_page;
 
 import 'package:core/core.dart';
 
-export 'src/ui/detailed_page_screen.dart';
+export 'src/ui/detailed_page.dart';
 
 import 'detailed_page.gm.dart';
 export 'detailed_page.gm.dart';

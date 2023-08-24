@@ -109,6 +109,7 @@ class ShoppingCartBloc extends Bloc<ShoppingCartEvent, ShoppingCartState> {
         state.copyWith(
           isLoading: false,
           items: _fetchItemsUseCase.execute(const NoParams()),
+          isOrdered: true,
         ),
       );
     } catch (e) {

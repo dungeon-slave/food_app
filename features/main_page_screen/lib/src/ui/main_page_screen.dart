@@ -14,18 +14,18 @@ class MainPageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => MainPageBloc(
+      create: (_) => MainPageBloc(
         checkUserUseCase: appLocator<CheckUserUseCase>(),
         fetchTextScaleUseCase: appLocator<FetchTextScaleUseCase>(),
         fetchThemeUseCase: appLocator<FetchThemeUseCase>(),
         authService: appLocator<AuthService>(),
       ),
       child: BlocConsumer<MainPageBloc, MainPageState>(
-        listener: (context, state) {
+        listener: (BuildContext context, MainPageState state) {
           SettingsWidget.of(context).changeTheme(state.isDark);
           SettingsWidget.of(context).changeTextScale(state.textScale);
         },
-        builder: (context, state) {
+        builder: (_, MainPageState state) {
           return state.isChecked
               ? const AutoRouter()
               : const AppLoadingCircle();

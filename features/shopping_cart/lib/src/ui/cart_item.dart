@@ -23,10 +23,13 @@ class CartItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          AppImage(
-            imageRef: _model.dishModel.imageRef,
-            width: AppDimens.padding100,
-            height: AppDimens.padding100,
+          Hero(
+            tag: _model.dishModel.id,
+            child: AppImage(
+              imageRef: _model.dishModel.imageRef,
+              width: AppDimens.size100,
+              height: AppDimens.size100,
+            ),
           ),
           Column(
             children: <Widget>[

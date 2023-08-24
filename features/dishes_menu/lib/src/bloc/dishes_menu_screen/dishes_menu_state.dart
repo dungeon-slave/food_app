@@ -5,14 +5,12 @@ class MenuState {
   final bool isLoading;
   final String errorMessage;
   final int currentTab;
-  final bool showSnackBar;
 
   const MenuState({
     required this.items,
     this.isLoading = false,
     this.errorMessage = '',
     this.currentTab = 0,
-    this.showSnackBar = false,
   });
 
   MenuState copyWith({
@@ -20,14 +18,12 @@ class MenuState {
     bool? isLoading,
     String? errorMessage,
     int? currentTab,
-    bool? showSnackBar,
   }) {
     return MenuState(
       items: items ?? this.items,
       errorMessage: errorMessage ?? this.errorMessage,
       isLoading: isLoading ?? this.isLoading,
       currentTab: currentTab ?? this.currentTab,
-      showSnackBar: showSnackBar ?? this.showSnackBar,
     );
   }
 }

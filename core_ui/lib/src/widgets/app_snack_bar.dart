@@ -24,10 +24,12 @@ void showAppSnackBar({
         ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         margin: snackMargin,
-        content: Text(
-          title,
-          style: AppFonts.normal22.copyWith(
-            color: Theme.of(context).indicatorColor,
+        content: Center(
+          child: Text(
+            title,
+            style: AppFonts.normal22.copyWith(
+              color: Theme.of(context).indicatorColor,
+            ),
           ),
         ),
       ),

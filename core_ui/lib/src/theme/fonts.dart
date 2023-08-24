@@ -31,8 +31,13 @@ final class AppFonts {
     fontWeight: FontWeight.normal,
   );
 
-    static const normal20 = TextStyle(
+  static const normal20 = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.normal,
+  );
+
+  static const bold10 = TextStyle(
+    fontSize: 10,
+    fontWeight: FontWeight.bold,
   );
 }

@@ -11,6 +11,8 @@ export 'package:connectivity_plus/connectivity_plus.dart';
 export 'package:firebase_auth/firebase_auth.dart';
 export 'package:google_sign_in/google_sign_in.dart';
 export 'package:auto_route/auto_route.dart';
+export 'package:lottie/lottie.dart';
+export 'package:animations/animations.dart';
 export 'package:uuid/uuid.dart';
 
 export 'package:core/services/url_service.dart';

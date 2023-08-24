@@ -16,14 +16,16 @@ dependencies:
     path: ../../domain
   core:
     path: ../../core
-  dishes_menu:
-    path: ../dishes_menu
   order_history:
     path: ../order_history
   shopping_cart:
     path: ../shopping_cart
+  dishes_menu:
+    path: ../dishes_menu
   settings:
     path: ../settings
+  navigation:
+    path: ../../navigation
 
 dev_dependencies:
   flutter_test:

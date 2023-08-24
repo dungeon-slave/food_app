@@ -17,3 +17,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+
+flutter:
+  assets:
+    - lib/src/assets/animations/empty_list.json
+    - lib/src/assets/animations/ordered.json

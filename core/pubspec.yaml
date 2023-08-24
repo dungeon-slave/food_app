@@ -26,6 +26,8 @@ dependencies:
   google_sign_in: ^6.1.4
   connectivity_plus: ^4.0.2
   auto_route: ^7.8.0
+  lottie: ^2.6.0
+  animations: ^2.0.7
   uuid: ^3.0.7
   core_ui:
     path: ../core_ui
