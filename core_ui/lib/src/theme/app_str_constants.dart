@@ -10,8 +10,6 @@ final class AppStrConstants {
   static const String showDetails = 'Show details';
   static const String hideDetails = 'Hide details';
 
-  static const String emptyList = 'It\'s empty here...';
-
   static const String telegramContactTitle = 'Telegram';
   static const String instagramContactTitle = 'Instagram';
 

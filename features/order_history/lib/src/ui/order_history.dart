@@ -41,7 +41,7 @@ class OrderHistoryScreen extends StatelessWidget {
                     return AppError(errorText: state.errorMessage);
                   }
                   if (state.items.isEmpty) {
-                    return const EmptyListTitle();
+                    return const EmptyList(link: AppAnimations.emptyList);
                   }
                   return ListView.builder(
                     padding: const EdgeInsets.all(AppDimens.padding10),

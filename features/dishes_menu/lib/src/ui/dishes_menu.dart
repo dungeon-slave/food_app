@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:core/di/app_di.dart';
 import 'package:core_ui/core_ui.dart';
 import 'package:dishes_menu/src/bloc/dishes_menu_screen/dishes_menu_bloc.dart';
+import 'package:dishes_menu/src/models/animation_model.dart';
 import 'package:dishes_menu/src/ui/dish_item.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
@@ -17,19 +18,26 @@ class DishesMenuScreen extends StatefulWidget {
 class DishesMenuScreenState extends State<DishesMenuScreen>
     with TickerProviderStateMixin {
   late final TabController _tabController;
-  bool isTabControllerInited = false;
+  final List<AnimationModel> _animationModels = <AnimationModel>[];
+  bool _isTabControllerInited = false;
 
-  void _handleSwipe(DragEndDetails details) {
-    // Swiping in right direction.
+  void _swipeHandler(DragEndDetails details) {
     if (details.primaryVelocity! > AppNumConstants.swipesSensivity &&
         _tabController.index > 0) {
       _tabController.index--;
+      return;
     }
-    // Swiping in left direction.
     if (details.primaryVelocity! < -AppNumConstants.swipesSensivity &&
         _tabController.index < _tabController.length - 1) {
       _tabController.index++;
+      return;
     }
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -39,17 +47,19 @@ class DishesMenuScreenState extends State<DishesMenuScreen>
         return MenuBloc(
           fetchDishesUsecase: appLocator<FetchDishesUsecase>(),
           saveItemsUseCase: appLocator<SaveItemUseCase>(),
+          stackRouter: AutoRouter.of(context),
         );
       },
       child: BlocConsumer<MenuBloc, MenuState>(
         listener: (BuildContext context, MenuState state) {
-          if (!isTabControllerInited && state.items.isNotEmpty) {
-            isTabControllerInited = true;
+          if (!_isTabControllerInited && state.items.isNotEmpty) {
+            _isTabControllerInited = true;
             _tabController = TabController(
-              initialIndex: 0,
               length: state.items.length,
               vsync: this,
-              animationDuration: Duration.zero,
+              animationDuration: const Duration(
+                milliseconds: AppNumConstants.nestedDuration,
+              ),
             );
             _tabController.addListener(
               () => BlocProvider.of<MenuBloc>(context).add(
@@ -63,22 +73,20 @@ class DishesMenuScreenState extends State<DishesMenuScreen>
             return AppError(errorText: state.errorMessage);
           }
           if (state.isLoading) {
-            return Container(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              child: const AppLoadingCircle(),
-            );
+            return const AppLoadingCircle();
           }
           return GestureDetector(
-            onHorizontalDragEnd: _handleSwipe,
+            onHorizontalDragEnd: _swipeHandler,
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
                 return SafeArea(
                   minimum: EdgeInsets.only(top: constraints.minHeight / 28),
                   child: Scaffold(
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                     appBar: AppBar(
                       backgroundColor:
                           Theme.of(context).scaffoldBackgroundColor,
-                      toolbarHeight: 0,
+                      toolbarHeight: AppDimens.size0,
                       bottom: TabBar(
                         controller: _tabController,
                         indicatorColor: Theme.of(context).indicatorColor,
@@ -96,17 +104,99 @@ class DishesMenuScreenState extends State<DishesMenuScreen>
                         ),
                       ),
                     ),
-                    body: Container(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(AppDimens.padding10),
-                        itemCount: state.items[state.currentTab].dishes.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return DishItem(
-                            model: state.items[state.currentTab].dishes[index],
-                          );
-                        },
-                      ),
+                    body: Stack(
+                      children: <Widget>[
+                        ListView.builder(
+                          padding: const EdgeInsets.all(AppDimens.padding10),
+                          itemCount:
+                              state.items[state.currentTab].dishes.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return DishItem(
+                              model:
+                                  state.items[state.currentTab].dishes[index],
+                              handler: (Offset childOffset) {
+                                AnimationController currController =
+                                    AnimationController(
+                                  duration: const Duration(
+                                    milliseconds:
+                                        AppNumConstants.motionDuration,
+                                  ),
+                                  vsync: this,
+                                );
+                                Animation<Rect?> currAnimation = RectTween(
+                                  begin: Rect.fromLTWH(
+                                    childOffset.dx +
+                                        constraints.minWidth / 4.55,
+                                    childOffset.dy,
+                                    AppDimens.size200,
+                                    AppDimens.size200,
+                                  ),
+                                  end: Rect.fromLTWH(
+                                    constraints.minWidth / 1.75,
+                                    constraints.minHeight -
+                                        constraints.minHeight / 10,
+                                    AppDimens.size200 / 5,
+                                    AppDimens.size200 / 5,
+                                  ),
+                                ).animate(currController);
+                                AnimationModel currModel = AnimationModel(
+                                  controller: currController,
+                                  animation: currAnimation,
+                                  imageRef: state.items[state.currentTab]
+                                      .dishes[index].imageRef,
+                                );
+
+                                currModel.controller.addListener(
+                                  () => (AnimationModel model) {
+                                    if (model.animation.isCompleted) {
+                                      model.controller.dispose();
+                                      _animationModels.remove(model);
+                                    }
+                                    setState(() {});
+                                  }(currModel),
+                                );
+                                _animationModels.add(currModel);
+
+                                Future.delayed(
+                                  const Duration(
+                                    milliseconds: AppNumConstants.addDelay,
+                                  ),
+                                  () => BlocProvider.of<MenuBloc>(context).add(
+                                    AddDishEvent(
+                                      model: state.items[state.currentTab]
+                                          .dishes[index],
+                                    ),
+                                  ),
+                                );
+                                currModel.controller.forward();
+                              },
+                            );
+                          },
+                        ),
+                        ...List<AnimatedBuilder>.generate(
+                          _animationModels.length,
+                          (int index) => AnimatedBuilder(
+                            animation: _animationModels[index].animation,
+                            child: Positioned.fromRect(
+                              rect: _animationModels[index].animation.value!,
+                              child: AppImage(
+                                imageRef: _animationModels[index].imageRef,
+                                width: _animationModels[index]
+                                    .animation
+                                    .value!
+                                    .width,
+                                height: _animationModels[index]
+                                    .animation
+                                    .value!
+                                    .height,
+                              ),
+                            ),
+                            builder: (_, Widget? child) {
+                              return child ?? const SizedBox.shrink();
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );

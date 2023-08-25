@@ -1,4 +1,5 @@
-import 'package:core/core.dart' show BlocConsumer, BlocProvider, RoutePage;
+import 'package:core/core.dart'
+    show BlocConsumer, BlocProvider, RoutePage;
 import 'package:core/di/app_di.dart';
 import 'package:core/services/auth_service.dart';
 import 'package:core_ui/core_ui.dart';

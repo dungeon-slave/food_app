@@ -13,15 +13,26 @@ dependencies:
     path: ./core
   data:
     path: ./data
+  domain:
+    path: ./domain
   navigation:
     path: ./navigation
   core_ui:
     path: ./core_ui
+  shopping_cart:
+    path: ./features/shopping_cart
+  dishes_menu:
+    path: ./features/dishes_menu
+  order_history:
+    path: ./features/order_history
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   flutter_lints: ^2.0.0
+  mocktail: ^1.0.0
 
 flutter:
   uses-material-design: true

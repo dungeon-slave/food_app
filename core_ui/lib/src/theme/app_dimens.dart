@@ -3,9 +3,11 @@ final class AppDimens {
   static const double margin5 = 5;
   static const double radius10 = 10;
 
+  static const double size0 = 0;
   static const double size2 = 2;
   static const double size30 = 30;
   static const double size40 = 40;
+  static const double size100 = 100;
   static const double size200 = 200;
   static const double size250 = 250;
   static const double size380 = 380;

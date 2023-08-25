@@ -1,9 +1,11 @@
 import 'package:core/core.dart';
+import 'package:core_ui/core_ui.dart';
 import 'package:detailed_page/detailed_page.dart';
 import 'package:dishes_menu/dishes_menu.dart';
 import 'package:home_screen/home_screen.dart';
 import 'package:main_page_screen/main_page_screen.dart';
 import 'package:navigation/src/app_router/auth_guard.dart';
+import 'package:navigation/src/hero_empty_router.dart';
 import 'package:order_history/order_history.dart';
 import 'package:settings/settings.dart';
 import 'package:shopping_cart/shopping_cart.dart';
@@ -34,7 +36,7 @@ class AppRouter extends _$AppRouter {
   }) : _authGuard = authGuard;
 
   @override
-  List<AutoRoute> get routes => [
+  List<AutoRoute> get routes => <AutoRoute>[
         AutoRoute(
           path: '/',
           page: MainPageRoute.page,
@@ -43,17 +45,17 @@ class AppRouter extends _$AppRouter {
               path: 'sign',
               page: EmptySign.page,
               children: <AutoRoute>[
-                AutoRoute(
+                CustomRoute(
                   path: '',
                   page: SignInRoute.page,
+                  durationInMilliseconds: AppNumConstants.nestedDuration,
+                  transitionsBuilder: TransitionsBuilders.fadeIn,
                 ),
-                AutoRoute(
+                CustomRoute(
                   path: 'up',
                   page: SignUpRoute.page,
-                ),
-                RedirectRoute(
-                  path: 'up',
-                  redirectTo: '',
+                  durationInMilliseconds: AppNumConstants.nestedDuration,
+                  transitionsBuilder: TransitionsBuilders.fadeIn,
                 ),
               ],
             ),
@@ -72,12 +74,8 @@ class AppRouter extends _$AppRouter {
                       page: DishesMenuRoute.page,
                     ),
                     AutoRoute(
-                      path: 'detailedPage',
                       page: DetailedPageRoute.page,
-                    ),
-                    RedirectRoute(
                       path: 'detailedPage',
-                      redirectTo: '',
                     ),
                   ],
                 ),

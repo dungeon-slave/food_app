@@ -1,20 +1,55 @@
+import 'package:core/core.dart';
 import 'package:core_ui/core_ui.dart';
 import 'package:detailed_page/src/bloc/detailed_page_bloc.dart';
 import 'package:domain/models/dishes_items/dish_model.dart';
 import 'package:flutter/material.dart';
-import 'package:core/core.dart';
 
 @RoutePage()
-class DetailedPageScreen extends StatelessWidget {
+class DetailedPage extends StatefulWidget {
   final DishModel _model;
   final void Function() _addToCartHandler;
 
-  const DetailedPageScreen({
+  const DetailedPage({
     required DishModel model,
     required void Function() addToCartHandler,
     super.key,
   })  : _model = model,
         _addToCartHandler = addToCartHandler;
+
+  @override
+  State<DetailedPage> createState() => _DetailedPageState();
+}
+
+class _DetailedPageState extends State<DetailedPage>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: AppNumConstants.scaleDuration),
+    );
+    _controller.addListener(
+      () {
+        if (_controller.isCompleted) {
+          _controller.reverse();
+        }
+      },
+    );
+    _animation = Tween<double>(
+      begin: AppNumConstants.buttonMinScale,
+      end: AppNumConstants.buttonMaxScale,
+    ).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +91,7 @@ class DetailedPageScreen extends StatelessWidget {
                 title: Align(
                   alignment: Alignment.bottomCenter,
                   child: Text(
-                    _model.name,
+                    widget._model.name,
                     style: AppFonts.normal30.copyWith(
                       color: Theme.of(context).primaryColor,
                     ),
@@ -81,10 +116,13 @@ class DetailedPageScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: AppImage(
-                      imageRef: _model.imageRef,
-                      width: AppDimens.size250,
-                      height: AppDimens.size250,
+                    child: Hero(
+                      tag: widget._model.id,
+                      child: AppImage(
+                        imageRef: widget._model.imageRef,
+                        width: AppDimens.size250,
+                        height: AppDimens.size250,
+                      ),
                     ),
                   ),
                   Container(
@@ -105,10 +143,8 @@ class DetailedPageScreen extends StatelessWidget {
                       right: AppDimens.padding15,
                     ),
                     child: Text(
-                      _model.description,
-                      style: AppFonts.normal22.copyWith(
-                        color: Theme.of(context).primaryColor,
-                      ),
+                      widget._model.description,
+                      style: AppFonts.normal22,
                     ),
                   ),
                   Container(
@@ -126,7 +162,7 @@ class DetailedPageScreen extends StatelessWidget {
                     ),
                   ),
                   ...List.generate(
-                    _model.ingredients.length,
+                    widget._model.ingredients.length,
                     (int index) {
                       return Container(
                         alignment: Alignment.centerLeft,
@@ -137,10 +173,8 @@ class DetailedPageScreen extends StatelessWidget {
                           bottom: AppDimens.padding20,
                         ),
                         child: Text(
-                          '- ${_model.ingredients[index]}',
-                          style: AppFonts.normal22.copyWith(
-                            color: Theme.of(context).primaryColor,
-                          ),
+                          '- ${widget._model.ingredients[index]}',
+                          style: AppFonts.normal22,
                         ),
                       );
                     },
@@ -167,14 +201,32 @@ class DetailedPageScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Text(
-                      '${_model.price}\$',
+                      '${widget._model.price}\$',
                       style: AppFonts.bold24.copyWith(
                         color: Theme.of(context).indicatorColor,
                       ),
                     ),
-                    AppButton(
-                      text: AppStrConstants.addToCart,
-                      handler: _addToCartHandler,
+                    AnimatedBuilder(
+                      animation: _animation,
+                      child: Padding(
+                        padding: EdgeInsets.all(_animation.value),
+                        child: AppButton(
+                          text: AppStrConstants.addToCart,
+                          handler: () {
+                            if (_controller.isAnimating) {
+                              _controller.reset();
+                            }
+                            _controller.forward();
+                            widget._addToCartHandler();
+                          },
+                        ),
+                      ),
+                      builder: (_, Widget? child) {
+                        return Transform.scale(
+                          scale: _animation.value,
+                          child: child,
+                        );
+                      },
                     ),
                   ],
                 ),

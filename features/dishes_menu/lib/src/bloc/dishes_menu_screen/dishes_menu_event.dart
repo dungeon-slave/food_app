@@ -15,3 +15,10 @@ class AddDishEvent extends MenuEvent {
 
   AddDishEvent({required this.model});
 }
+
+class OpenDetailedEvent extends MenuEvent {
+  final DishModel model;
+  final void Function() handler;
+
+  OpenDetailedEvent({required this.model, required this.handler});
+}
